@@ -88,8 +88,6 @@ chmod +x waybar-manager.sh
    * 删除 `~/.config/waybar/` 当前文件。
    * 将 `~/backups/waybar/` 内的 `.backup` 文件还原为原名并复制回 `~/.config/waybar/`。
 
----
-
 ## 配置文件目录结构
 
 安装/配置完成后，目录结构如下：
