@@ -3,289 +3,188 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # =============================================================================
-# SDDM 管理器 (sddm-manager.sh)
-#
+# 🔐 SDDM 管理器（统一结构版）
 # 功能：
 #   - 安装 / 卸载 SDDM
 #   - 安装 / 卸载 astronaut 主题
-#   - 切换 astronaut 子主题
-#   - 预览 / 更新 主题
-#   - 检查当前状态
-#   - 备份 / 恢复 SDDM 配置
-#
+#   - 切换 / 预览 / 更新子主题
+#   - 检查状态
+#   - 备份 / 恢复配置
 # 适用系统：Arch Linux 及其衍生版
-#
-# 备份机制：
-#   - 备份文件存放于 ~/backups/sddm
-#   - 文件名追加 `.backup` 后缀
-#   - 恢复时删除 /etc 下现有配置文件，再从备份去掉 `.backup` 后缀恢复
 # =============================================================================
 
-# -----------------------------------------------------------------------------
-# 路径配置
-# -----------------------------------------------------------------------------
-THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"  # astronaut 主题安装路径
-SDDM_CONF="/etc/sddm.conf"                               # SDDM 主配置文件
-BACKUP_DIR="$HOME/backups/sddm"                          # 备份目录
+# ==== 常量 ====
+readonly APP_NAME="SDDM"
+readonly THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"
+readonly SDDM_CONF="/etc/sddm.conf"
+readonly SDDM_CONF_DIR="/etc/sddm.conf.d"
+readonly BACKUP_DIR="$HOME/backups/sddm"
+readonly LOG_DIR="$BACKUP_DIR/logs"
+readonly LOG_FILE="$LOG_DIR/action.log"
 
-# -----------------------------------------------------------------------------
-# 安装 SDDM
-# -----------------------------------------------------------------------------
-install_sddm() {
-    echo "==> 安装 SDDM..."
-    sudo pacman -S --needed --noconfirm sddm
-    sudo systemctl enable sddm.service
-    echo "✅ SDDM 已安装并启用。"
+# ==== 通用函数 ====
+_log_action() { mkdir -p "$LOG_DIR"; echo "$(date '+%F %T') - $*" >> "$LOG_FILE"; }
+_error_exit() { echo "[错误] $*"; _log_action "错误: $*"; return 1; }
+_confirm() { read -r -p "$1 [y/N]: " ans; [[ "${ans:-N}" =~ ^[Yy]$ ]]; }
+_check_environment() {
+  local choice="${1:-}"
+  command -v pacman >/dev/null || return $(_error_exit "仅支持 Arch Linux 系列系统")
+  if ! command -v sddm >/dev/null && [[ "$choice" != "1" ]]; then
+    return $(_error_exit "未安装 $APP_NAME，请先安装")
+  fi
+}
+_ensure_dir_writable() { mkdir -p "$1" 2>/dev/null || _error_exit "无法创建目录: $1"; }
+
+# ==== 功能区 ====
+_install_app() {
+  sudo pacman -S --needed --noconfirm sddm && sudo systemctl enable sddm.service || _error_exit "安装失败"
+  _log_action "安装成功"
 }
 
-# -----------------------------------------------------------------------------
-# 卸载 SDDM
-# -----------------------------------------------------------------------------
-uninstall_sddm() {
-    echo "==> 停止并卸载 SDDM..."
-    sudo systemctl disable sddm.service || true
-    sudo pacman -Rns --noconfirm sddm
-    echo "✅ SDDM 已卸载。"
+_uninstall_app() {
+  _confirm "确认卸载 $APP_NAME 吗？" || { echo "ℹ️ 取消卸载"; return; }
+  sudo systemctl disable sddm.service || true
+  sudo pacman -Rns --noconfirm sddm && _log_action "卸载成功" || _error_exit "卸载失败"
 }
 
-# -----------------------------------------------------------------------------
-# 安装 astronaut 主题
-# -----------------------------------------------------------------------------
-install_theme() {
-    echo "==> 安装依赖..."
-    sudo pacman -S --needed --noconfirm qt6-svg qt6-virtualkeyboard qt6-multimedia-ffmpeg git
+_install_theme_deps() {
+  sudo pacman -S --needed --noconfirm qt6-svg qt6-virtualkeyboard qt6-multimedia-ffmpeg git || _error_exit "依赖安装失败"
+}
 
-    echo "==> 检查 astronaut 主题目录..."
-    if [ -d "$THEME_DIR" ]; then
-        # 检查必要文件是否存在，否则删除重新克隆
-        if [ ! -f "$THEME_DIR/metadata.desktop" ] || [ ! -d "$THEME_DIR/Fonts" ] || [ ! -d "$THEME_DIR/Themes" ]; then
-            echo "==> 检测到不完整安装，正在删除并重新克隆..."
-            sudo rm -rf "$THEME_DIR"
-            sudo git clone --depth 1 https://github.com/keyitdev/sddm-astronaut-theme.git "$THEME_DIR"
-        else
-            echo "主题目录已存在且完整，跳过克隆。"
-        fi
-    else
-        echo "==> 克隆 astronaut 主题仓库..."
-        sudo git clone --depth 1 https://github.com/keyitdev/sddm-astronaut-theme.git "$THEME_DIR"
-    fi
+_clone_theme_repo() {
+  if [[ -d "$THEME_DIR" ]]; then
+    sudo rm -rf "$THEME_DIR"
+  fi
+  sudo git clone --depth 1 https://github.com/keyitdev/sddm-astronaut-theme.git "$THEME_DIR" || _error_exit "克隆主题失败"
+}
 
-    echo "==> 安装字体..."
-    if [ -d "$THEME_DIR/Fonts" ]; then
-        sudo cp -r "$THEME_DIR/Fonts/"* /usr/share/fonts/ || true
-        sudo fc-cache -fv
-    else
-        echo "❌ Fonts 目录缺失，请检查克隆是否成功。"
-    fi
+_install_theme_fonts() {
+  [[ -d "$THEME_DIR/Fonts" ]] || _error_exit "Fonts 目录缺失"
+  sudo cp -r "$THEME_DIR/Fonts/"* /usr/share/fonts/ || true
+  sudo fc-cache -fv
+}
 
-    echo "==> 配置 SDDM 使用 astronaut 主题..."
-    sudo bash -c "cat > $SDDM_CONF" <<EOF
+_configure_theme() {
+  sudo bash -c "cat > $SDDM_CONF" <<EOF
 [Theme]
 Current=sddm-astronaut-theme
 EOF
-
-    echo "==> 启用虚拟键盘..."
-    sudo mkdir -p /etc/sddm.conf.d
-    sudo bash -c "cat > /etc/sddm.conf.d/virtualkbd.conf" <<EOF
+  sudo mkdir -p "$SDDM_CONF_DIR"
+  sudo bash -c "cat > $SDDM_CONF_DIR/virtualkbd.conf" <<EOF
 [General]
 InputMethod=qtvirtualkeyboard
 EOF
-
-    echo "==> 设置默认子主题为 hyprland_kath..."
-    if [ -f "$THEME_DIR/metadata.desktop" ]; then
-        sudo sed -i 's|^ConfigFile=.*|ConfigFile=Themes/hyprland_kath.conf|' "$THEME_DIR/metadata.desktop"
-    else
-        echo "❌ metadata.desktop 文件缺失，请检查克隆是否成功。"
-    fi
-
-    echo "==> 重启 SDDM..."
-    sudo systemctl restart sddm.service
-
-    echo "✅ astronaut 主题 (默认 hyprland_kath) 已安装完成！"
+  sudo sed -i 's|^ConfigFile=.*|ConfigFile=Themes/hyprland_kath.conf|' "$THEME_DIR/metadata.desktop"
 }
 
-# -----------------------------------------------------------------------------
-# 卸载 astronaut 主题
-# -----------------------------------------------------------------------------
-uninstall_theme() {
-    echo "==> 切换回 Breeze 默认主题..."
-    sudo bash -c "cat > $SDDM_CONF" <<EOF
+_install_theme() {
+  _install_theme_deps
+  _clone_theme_repo
+  _install_theme_fonts
+  _configure_theme
+  sudo systemctl restart sddm.service || _error_exit "SDDM 重启失败"
+  _log_action "astronaut 主题安装成功"
+  echo "✅ astronaut 主题已安装"
+}
+
+_uninstall_theme() {
+  _confirm "确认卸载 astronaut 主题吗？" || { echo "ℹ️ 取消卸载"; return; }
+  sudo bash -c "cat > $SDDM_CONF" <<EOF
 [Theme]
 Current=breeze
 EOF
-
-    echo "==> 删除虚拟键盘配置..."
-    sudo rm -f /etc/sddm.conf.d/virtualkbd.conf
-
-    echo "==> 删除 astronaut 主题..."
-    if [ -d "$THEME_DIR" ]; then
-        sudo rm -rf "$THEME_DIR"
-        echo "已删除 $THEME_DIR"
-    else
-        echo "未检测到 astronaut 主题目录，跳过。"
-    fi
-
-    echo "==> 清理字体缓存..."
-    sudo fc-cache -fv
-
-    echo "==> 重启 SDDM..."
-    sudo systemctl restart sddm.service
-
-    echo "✅ astronaut 主题已卸载，已恢复为 Breeze 登录界面。"
+  sudo rm -f "$SDDM_CONF_DIR/virtualkbd.conf"
+  sudo rm -rf "$THEME_DIR"
+  sudo fc-cache -fv
+  sudo systemctl restart sddm.service || _error_exit "SDDM 重启失败"
+  _log_action "astronaut 主题卸载成功"
+  echo "✅ 已恢复 Breeze 主题"
 }
 
-# -----------------------------------------------------------------------------
-# 切换 astronaut 子主题
-# -----------------------------------------------------------------------------
-switch_theme() {
-    echo "==> 可用子主题列表："
-    themes=($(ls "$THEME_DIR/Themes" | sed 's/\.conf$//'))  # 获取主题数组
-    for i in "${!themes[@]}"; do
-        echo "     $((i+1))  ${themes[i]}"
-    done
-
-    read -rp "请输入要切换的主题编号（例如 2）： " num
-
-    if [[ $num =~ ^[0-9]+$ ]] && [ $num -ge 1 ] && [ $num -le ${#themes[@]} ]; then
-        theme="${themes[$((num-1))]}"
-        if [ -f "$THEME_DIR/Themes/${theme}.conf" ]; then
-            sudo sed -i "s|^ConfigFile=.*|ConfigFile=Themes/${theme}.conf|" "$THEME_DIR/metadata.desktop"
-            echo "✅ 已切换到子主题: $theme"
-            sudo systemctl restart sddm.service
-        else
-            echo "❌ 主题 $theme 不存在"
-        fi
-    else
-        echo "❌ 无效编号，请输入 1-${#themes[@]} 之间的数字"
-    fi
+_switch_subtheme() {
+  [[ -d "$THEME_DIR/Themes" ]] || _error_exit "未找到主题目录"
+  local themes=($(ls "$THEME_DIR/Themes" | sed 's/\.conf$//'))
+  for i in "${!themes[@]}"; do echo "$((i+1))) ${themes[$i]}"; done
+  read -rp "选择主题编号: " num
+  [[ "$num" -ge 1 && "$num" -le ${#themes[@]} ]] || _error_exit "无效编号"
+  sudo sed -i "s|^ConfigFile=.*|ConfigFile=Themes/${themes[$((num-1))]}.conf|" "$THEME_DIR/metadata.desktop"
+  sudo systemctl restart sddm.service || _error_exit "SDDM 重启失败"
+  _log_action "切换子主题: ${themes[$((num-1))]}"
 }
 
-# -----------------------------------------------------------------------------
-# 预览 astronaut 主题
-# -----------------------------------------------------------------------------
-preview_theme() {
-    echo "==> 预览当前主题..."
-    sddm-greeter-qt6 --test-mode --theme "$THEME_DIR/"
+_preview_theme() {
+  [[ -d "$THEME_DIR" ]] || _error_exit "未找到主题目录"
+  sddm-greeter-qt6 --test-mode --theme "$THEME_DIR/" || _error_exit "预览失败"
+  _log_action "预览主题"
 }
 
-# -----------------------------------------------------------------------------
-# 更新 astronaut 主题
-# -----------------------------------------------------------------------------
-update_theme() {
-    echo "==> 更新 astronaut 主题..."
-    if [ -d "$THEME_DIR/.git" ]; then
-        cd "$THEME_DIR"
-        sudo git pull
-        sudo cp -r Fonts/* /usr/share/fonts/ || true
-        sudo fc-cache -fv
-        echo "✅ astronaut 主题已更新。"
-    else
-        echo "❌ 未找到 Git 仓库，请先安装主题。"
-    fi
+_update_theme() {
+  [[ -d "$THEME_DIR/.git" ]] || _error_exit "未找到主题 Git 仓库"
+  sudo git -C "$THEME_DIR" pull || _error_exit "更新失败"
+  _install_theme_fonts
+  sudo systemctl restart sddm.service || _error_exit "SDDM 重启失败"
+  _log_action "主题已更新"
 }
 
-# -----------------------------------------------------------------------------
-# 检查 SDDM 状态
-# -----------------------------------------------------------------------------
-check_status() {
-    echo "========== 当前 SDDM 状态 =========="
-    if systemctl is-active --quiet sddm.service; then
-        echo "SDDM 服务状态: ✅ 正在运行"
-    else
-        echo "SDDM 服务状态: ❌ 未运行"
-    fi
-
-    if [ -f "$SDDM_CONF" ]; then
-        current_theme=$(grep -E '^Current=' "$SDDM_CONF" | cut -d= -f2)
-        echo "当前主题: $current_theme"
-    else
-        echo "未找到 $SDDM_CONF"
-    fi
-
-    if [ -f "$THEME_DIR/metadata.desktop" ]; then
-        sub_theme=$(grep -E '^ConfigFile=' "$THEME_DIR/metadata.desktop" | cut -d= -f2 | sed 's|Themes/||; s|\.conf||')
-        echo "当前子主题: $sub_theme"
-    fi
-    echo "==================================="
+_check_status() {
+  echo "SDDM 服务: $(systemctl is-active --quiet sddm.service && echo 运行中 || echo 未运行)"
+  [[ -f "$SDDM_CONF" ]] && grep -E '^Current=' "$SDDM_CONF" | sed 's/^Current=//'
+  [[ -f "$THEME_DIR/metadata.desktop" ]] && grep -E '^ConfigFile=' "$THEME_DIR/metadata.desktop" | sed 's|Themes/||; s|\.conf||'
+  _log_action "状态检查"
 }
 
-# -----------------------------------------------------------------------------
-# 备份配置（保存为 .backup 到 ~/backups/sddm）
-# -----------------------------------------------------------------------------
-backup_config() {
-    echo "==> 备份 SDDM 配置到 $BACKUP_DIR ..."
-    mkdir -p "$BACKUP_DIR"
-
-    for file in /etc/sddm.conf*; do
-        if [ -f "$file" ]; then
-            base=$(basename "$file")
-            cp "$file" "$BACKUP_DIR/${base}.backup"
-            echo "已备份: $file -> $BACKUP_DIR/${base}.backup"
-        fi
-    done
-
-    echo "✅ 已完成备份。"
+_backup_config() {
+  _ensure_dir_writable "$BACKUP_DIR"
+  for file in /etc/sddm.conf*; do
+    [[ -f "$file" ]] && cp "$file" "$BACKUP_DIR/"
+  done
+  _log_action "备份配置"
 }
 
-# -----------------------------------------------------------------------------
-# 恢复配置（删除现有配置，从 .backup 恢复）
-# -----------------------------------------------------------------------------
-restore_config() {
-    echo "==> 恢复备份配置..."
-    if [ ! -d "$BACKUP_DIR" ]; then
-        echo "❌ 未找到备份目录 $BACKUP_DIR"
-        return 1
-    fi
-
-    # 删除现有 /etc/sddm.conf*
-    sudo rm -f /etc/sddm.conf*
-
-    # 恢复 .backup 文件
-    for backup in "$BACKUP_DIR"/*.backup; do
-        if [ -f "$backup" ]; then
-            base=$(basename "$backup" .backup)
-            sudo cp "$backup" "/etc/$base"
-            echo "已恢复: $backup -> /etc/$base"
-        fi
-    done
-
-    echo "✅ 配置已恢复。"
-    sudo systemctl restart sddm.service
+_restore_config() {
+  [[ -d "$BACKUP_DIR" ]] || _error_exit "无备份目录"
+  sudo rm -f /etc/sddm.conf*
+  for file in "$BACKUP_DIR"/*; do sudo cp "$file" /etc/; done
+  sudo systemctl restart sddm.service || _error_exit "重启失败"
+  _log_action "恢复配置"
 }
 
-# -----------------------------------------------------------------------------
-# 菜单入口
-# -----------------------------------------------------------------------------
-menu() {
-    echo "========== SDDM 管理器 =========="
-    echo "1) 安装 SDDM"
-    echo "2) 卸载 SDDM"
-    echo "3) 安装 astronaut 主题 (默认 hyprland_kath)"
-    echo "4) 卸载 astronaut 主题"
-    echo "5) 切换 astronaut 子主题"
-    echo "6) 预览当前主题"
-    echo "7) 更新 astronaut 主题"
-    echo "8) 检查当前状态"
-    echo "9) 备份配置"
-    echo "10) 恢复配置"
-    echo "0) 退出"
-    echo "================================="
-    read -rp "请选择操作 [0-10]: " choice
-
-    case $choice in
-        1) install_sddm ;;
-        2) uninstall_sddm ;;
-        3) install_theme ;;
-        4) uninstall_theme ;;
-        5) switch_theme ;;
-        6) preview_theme ;;
-        7) update_theme ;;
-        8) check_status ;;
-        9) backup_config ;;
-        10) restore_config ;;
-        0) exit 0 ;;
-        *) echo "❌ 无效选择" ;;
-    esac
+# ==== 菜单 ====
+_show_menu() {
+  clear
+  echo "========== $APP_NAME 管理器 =========="
+  echo "1) 安装 SDDM"
+  echo "2) 卸载 SDDM"
+  echo "3) 安装 astronaut 主题"
+  echo "4) 卸载 astronaut 主题"
+  echo "5) 切换子主题"
+  echo "6) 预览主题"
+  echo "7) 更新主题"
+  echo "8) 检查状态"
+  echo "9) 备份配置"
+  echo "10) 恢复配置"
+  echo "0) 退出"
 }
 
-menu
+# ==== 主循环 ====
+choice=""
+while true; do
+  _check_environment "$choice" || continue
+  _show_menu
+  read -rp "选择操作 [0-10]: " choice
+  case "$choice" in
+    1) _install_app ;;
+    2) _uninstall_app ;;
+    3) _install_theme ;;
+    4) _uninstall_theme ;;
+    5) _switch_subtheme ;;
+    6) _preview_theme ;;
+    7) _update_theme ;;
+    8) _check_status ;;
+    9) _backup_config ;;
+    10) _restore_config ;;
+    0) echo "✅ 退出"; _log_action "退出"; exit 0 ;;
+    *) _error_exit "无效选项" ;;
+  esac
+  read -rp "按回车继续..."
+done

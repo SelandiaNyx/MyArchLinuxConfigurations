@@ -18,6 +18,7 @@ Hyprpaper 是 Hyprland 的轻量级壁纸管理工具，`hyprpaper-manager.sh` �
 - **日志记录**：记录所有操作到日志文件，便于调试。
 
 备份/恢复逻辑：
+
 - **备份时**：将 `hyprpaper.conf` 复制到 `~/backups/hyprpaper/`，并添加 `.backup` 后缀。
 - **恢复时**：删除现有配置，将备份文件还原并复制回 `~/.config/hypr/`。
 
@@ -33,16 +34,19 @@ Hyprpaper 是 Hyprland 的轻量级壁纸管理工具，`hyprpaper-manager.sh` �
 ## 安装与准备
 
 1. **下载脚本**：
+
    ```bash
-   curl -fsSL -o hyprpaper-manager.sh https://raw.githubusercontent.com/<your-username>/<your-repo>/main/hyprpaper/hyprpaper-manager.sh
+   curl -fsSL -o hyprpaper-manager.sh https://github.com/SelandiaNyx/MyArchLinuxConfigurations/raw/main/Hyprpaper/auto-script/hyprpaper-manager.sh
    ```
 
 2. **赋予执行权限**：
+
    ```bash
    chmod +x hyprpaper-manager.sh
    ```
 
 3. **运行脚本**：
+
    ```bash
    ./hyprpaper-manager.sh
    ```
@@ -53,7 +57,7 @@ Hyprpaper 是 Hyprland 的轻量级壁纸管理工具，`hyprpaper-manager.sh` �
 
 运行脚本后，会显示以下交互式菜单：
 
-```
+```bash
 ========== Hyprpaper 管理器 ==========
 当前壁纸：/home/user/wallpapers/wallpaper1.png
 Hyprpaper 状态：运行中
@@ -162,18 +166,25 @@ Hyprpaper 已重载。
 如果遇到问题，请检查以下内容：
 
 1. **日志文件**：
+
    ```bash
    cat ~/backups/hyprpaper/hyprpaper.log
    ```
+
 2. **配置文件**：
+
    ```bash
    cat ~/.config/hypr/hyprpaper.conf
    ```
+
 3. **显示器信息**：
+
    ```bash
    hyprctl monitors
    ```
+
 4. **Hyprpaper 输出**：
+
    ```bash
    hyprpaper
    ```
@@ -181,7 +192,3 @@ Hyprpaper 已重载。
 ## 贡献
 
 欢迎提交问题或建议！请通过 GitHub Issues 或 Pull Requests 提供反馈。
-
-## 许可证
-
-[MIT 许可证](LICENSE)
