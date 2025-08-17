@@ -2,7 +2,8 @@
 
 ## 简介
 
-`sddm-manager.sh` 是一个 bash 脚本，用于管理 SDDM (Simple Desktop Display Manager) 和 sddm-astronaut-theme 主题（基于 <https://github.com/keyitdev/sddm-astronaut-theme>）。脚本支持 Arch Linux 及其衍生版，使用 pacman 安装依赖。
+`sddm-manager.sh` 是一个 bash 脚本，用于管理 SDDM (Simple Desktop Display Manager) 和 sddm-astronaut-theme 主题（基于 [sddm-astronaut-theme](https://github.com/keyitdev/sddm-astronaut-theme)
+）。脚本支持 Arch Linux 及其衍生版，使用 pacman 安装依赖。
 
 主题特点（来自仓库介绍）：
 
@@ -28,14 +29,25 @@
 
 ## 安装与准备
 
-1. 下载脚本：
-curl -fsSL -o sddm-manager.sh <https://github.com/SelandiaNyx/MyArchLinuxConfigurations/blob/main/SDDM/auto-script/sddm-manager.sh>
+按照以下步骤即可下载并运行 `sddm-manager.sh` 脚本：
 
-2. 赋予执行权限：
+1. 下载脚本
+
+```bash
+curl -fsSL -o sddm-manager.sh https://github.com/SelandiaNyx/MyArchLinuxConfigurations/raw/main/SDDM/auto-script/sddm-manager.sh
+```
+
+2. 赋予执行权限
+
+```bash
 chmod +x sddm-manager.sh
+```
 
-3. 运行：
+3. 运行脚本
+
+```bash
 ./sddm-manager.sh
+```
 
 - 菜单出现，选择操作。
 
@@ -55,7 +67,7 @@ chmod +x sddm-manager.sh
 10. 恢复配置
 11. 退出
 
-=================================
+================================
 
 ## 功能详解
 
