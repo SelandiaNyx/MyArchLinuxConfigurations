@@ -162,21 +162,43 @@ check_status() {
 }
 
 backup_config() {
+    BACKUP_DIR="$HOME/backups/sddm"
     echo "==> 备份 SDDM 配置到 $BACKUP_DIR ..."
-    sudo mkdir -p "$BACKUP_DIR"
-    sudo cp -r /etc/sddm.conf* "$BACKUP_DIR/" 2>/dev/null || true
-    echo "✅ 已备份配置文件。"
+    mkdir -p "$BACKUP_DIR"
+
+    for file in /etc/sddm.conf*; do
+        if [ -f "$file" ]; then
+            base=$(basename "$file")
+            cp "$file" "$BACKUP_DIR/${base}.backup"
+            echo "已备份: $file -> $BACKUP_DIR/${base}.backup"
+        fi
+    done
+    echo "✅ 已完成备份。"
 }
 
 restore_config() {
+    BACKUP_DIR="$HOME/backups/sddm"
     echo "==> 恢复备份配置..."
-    if [ -d "$BACKUP_DIR" ]; then
-        sudo cp -r "$BACKUP_DIR/"* /etc/
-        echo "✅ 已恢复备份。"
-        sudo systemctl restart sddm.service
-    else
+
+    if [ ! -d "$BACKUP_DIR" ]; then
         echo "❌ 未找到备份目录 $BACKUP_DIR"
+        return 1
     fi
+
+    # 删除现有 /etc/sddm.conf*
+    sudo rm -f /etc/sddm.conf*
+
+    # 恢复备份文件（去掉 .backup 后缀）
+    for backup in "$BACKUP_DIR"/*.backup; do
+        if [ -f "$backup" ]; then
+            base=$(basename "$backup" .backup)
+            sudo cp "$backup" "/etc/$base"
+            echo "已恢复: $backup -> /etc/$base"
+        fi
+    done
+
+    echo "✅ 配置已恢复。"
+    sudo systemctl restart sddm.service
 }
 
 menu() {
