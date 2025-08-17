@@ -27,3 +27,4 @@
 21. **[wofi](https://hg.sr.ht/~scoopta/wofi)** – Wayland 下的应用启动器，支持模糊搜索和主题定制。
 22. **[xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland)** – Hyprland 的桌面门户实现，支持与 X11 应用的互操作。
 23. **[zsh](https://www.zsh.org/)** – 功能强大的 shell，支持自动补全、脚本编程等特性。
+24. **[QDiskinfo](https://github.com/edisionnano/QDiskInfo)**

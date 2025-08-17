@@ -6,12 +6,11 @@
     "position": "top",
     "height": 38,
     "spacing": 4,
-
     // -------------------------------------------------------------------------
-    // 模块排列 (新增了 custom/launcher)
+    // 模块排列
     // -------------------------------------------------------------------------
     "modules-left": [
-        "custom/launcher", // <-- 新增的应用菜单
+        "custom/launcher",
         "hyprland/workspaces",
         "hyprland/window"
     ],
@@ -19,131 +18,119 @@
         "clock"
     ],
     "modules-right": [
-	"network",
+        "network",
         "pulseaudio",
-	"bluetooth",
+        "bluetooth",
         "cpu",
         "memory",
         "disk",
-	"tray",
+        "tray",
         "custom/power"
     ],
-
     // -------------------------------------------------------------------------
     // 模块详细配置
     // -------------------------------------------------------------------------
-
-    // --- 新增模块: 应用启动器 (需要 wofi) ---
     "custom/launcher": {
-        "format": "󰣇", // Arch Linux Logo
-        "tooltip": true,
+        "format": "󰣇",
         "tooltip-format": "应用启动器 (Wofi)",
-        "on-click": "wofi --show drun --width 550 --height 400 || echo 'wofi not installed'"
+        "on-click": "wofi --show drun --width 550 --height 400"
     },
-
     "hyprland/workspaces": {
-    	"disable-scroll": false,
-	"all-outputs": true,
-    	"on-click": "activate",
-    	"format": "{icon}",
-    	"format-icons": {
-        	"1": "",   // 终端
-        	"2": "",   // 浏览器 (Firefox)
-        	"3": "",   // 文件管理
-        	"4": "",   // 开发/IDE
-        	"5": "󰈙",   // 文档/编辑器
-        	"6": "󰝚",   // 音乐/媒体
-        	"7": "󰎆",   // 聊天/通讯
-        	"8": "",   // 游戏/Steam
-        	"9": "󰍹",   // 设置/系统
-        	"urgent": "",   // 紧急
-        	"focused": "",  // 当前焦点
-        	"default": ""   // 默认圆点
-    	}
+        "disable-scroll": false,
+        "all-outputs": true,
+        "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "󰈙",
+            "6": "󰝚",
+            "7": "󰎆",
+            "8": "",
+            "9": "󰍹",
+            "urgent": "",
+            "focused": "",
+            "default": ""
+        }
     },
-
     "hyprland/window": {
         "format": "{}",
         "max-length": 35,
         "separate-outputs": true
     },
-
     "clock": {
         "format": "󰥔 {:%Y-%m-%d %H:%M:%S}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "tooltip-format": "{:%Y %B}\n{calendar}",
         "format-alt": "󰃶 {:%A, %B %d, %Y}"
     },
-
-    // --- 优化模块: 网络 (显示网速) ---
+    // --- [v0.14.0 修正] 恢复使用 {bandwidth...Bytes} 字段 ---
     "network": {
-    	"interval": 1,
-    	"format-wifi": " {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
-    	"format-ethernet": "󰈀 {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
-    	"tooltip-format": "接口: {ifname}\nIP: {ipaddr}\nESSID: {essid}\n下载: {bandwidthDownBytes} / {bandwidthDownBits}\n上传: {bandwidthUpBytes} / {bandwidthUpBits}",
-    	"format-disconnected": "󰖪 Disconnected",
-    	"on-click": "nm-connection-editor"
+        "interval": 1,
+        "format-wifi": " {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
+        "format-ethernet": "󰈀 {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
+        "tooltip-format": "接口: {ifname}\nIP: {ipaddr}\nESSID: {essid}\n下载: {bandwidthDownBytes}\n上传: {bandwidthUpBytes}",
+        "format-disconnected": "󰖪 Disconnected",
+        "on-click": "nm-connection-editor"
     },
-
     "pulseaudio": {
         "format": "{icon} {volume}%",
         "format-muted": "󰖁 Muted",
         "on-click": "pavucontrol",
-	"on-click-right": "rfkill toggle pulseaudio",
+        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
         "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
         "format-icons": {
-            "headphone": "󰋋", "hands-free": "󰋎", "headset": "󰋎",
-            "phone": "󰏲", "portable": "󰏲", "car": "󰄋",
-            "default": ["", "", ""]
+            "headphone": "󰋋",
+            "hands-free": "󰋎",
+            "headset": "󰋎",
+            "phone": "󰏲",
+            "portable": "󰏲",
+            "car": "󰄋",
+            "default": [
+                "",
+                "",
+                ""
+            ]
         }
     },
-
-     "bluetooth": {
-        "format": "󰂯 {status}", // 默认格式
-        "format-disabled": "󰂲 Off", // 禁用时的格式
-        "format-connected": "󰂱 {device_alias}", // 连接设备后的格式
+    "bluetooth": {
+        "format": "󰂯 {status}",
+        "format-disabled": "󰂲 Off",
+        "format-connected": "󰂱 {device_alias}",
         "tooltip-format": "{device_alias}\nBattery: {device_battery_percentage}%",
-        "on-click": "blueman-manager", // 左键点击打开 blueman 管理器
-        "on-click-right": "rfkill toggle bluetooth", // 右键点击切换蓝牙开关
-        "format-icons": {
-            "enabled": "󰂯",
-            "disabled": "󰂲"
-        }
+        "on-click": "blueman-manager",
+        "on-click-right": "rfkill toggle bluetooth"
     },
-        
+    // --- [v0.14.0 修正] 恢复使用 {avg_frequency} 并修正单位为 MHz ---
     "cpu": {
         "interval": 2,
         "format": "󰘚 {usage}% ({avg_frequency}GHz)",
         "tooltip": true,
-        "tooltip-format": "CPU: {usage}% | Temp: {temperatureC}°C", // 确保 lm-sensors 已安装和配置
+        "tooltip-format": "CPU: {usage}% | Temp: {temperatureC}°C",
         "on-click": "kitty -e htop"
     },
-
     "memory": {
         "interval": 2,
         "format": "󰍛 {}%",
         "tooltip-format": "Mem: {used:0.2f}GB / {total:0.2f}GB",
         "on-click": "kitty -e htop"
     },
-
     "disk": {
         "path": "/",
         "interval": 30,
         "format": "󰋊 {percentage_used}%",
         "tooltip-format": "Disk (/): {used} / {total}",
-        "on-click": "kitty -e df -h"
+        "on-click": "qdiskinfo"
     },
-    
     "tray": {
         "icon-size": 18,
         "spacing": 10
     },
-
     "custom/power": {
         "format": "",
-        "tooltip": true,
         "tooltip-format": "电源菜单 (wofi)",
-        "on-click": "sh ~/.config/wofi/powermenu.sh --width 250 --height 230"
+        "on-click": "sh ~/.config/wofi/powermenu.sh"
     }
 }
-
