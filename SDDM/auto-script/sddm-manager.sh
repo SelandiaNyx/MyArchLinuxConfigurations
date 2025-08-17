@@ -1,10 +1,36 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
-THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"
-SDDM_CONF="/etc/sddm.conf"
-BACKUP_DIR="/etc/sddm.backup"
+# =============================================================================
+# SDDM 管理器 (sddm-manager.sh)
+#
+# 功能：
+#   - 安装 / 卸载 SDDM
+#   - 安装 / 卸载 astronaut 主题
+#   - 切换 astronaut 子主题
+#   - 预览 / 更新 主题
+#   - 检查当前状态
+#   - 备份 / 恢复 SDDM 配置
+#
+# 适用系统：Arch Linux 及其衍生版
+#
+# 备份机制：
+#   - 备份文件存放于 ~/backups/sddm
+#   - 文件名追加 `.backup` 后缀
+#   - 恢复时删除 /etc 下现有配置文件，再从备份去掉 `.backup` 后缀恢复
+# =============================================================================
 
+# -----------------------------------------------------------------------------
+# 路径配置
+# -----------------------------------------------------------------------------
+THEME_DIR="/usr/share/sddm/themes/sddm-astronaut-theme"  # astronaut 主题安装路径
+SDDM_CONF="/etc/sddm.conf"                               # SDDM 主配置文件
+BACKUP_DIR="$HOME/backups/sddm"                          # 备份目录
+
+# -----------------------------------------------------------------------------
+# 安装 SDDM
+# -----------------------------------------------------------------------------
 install_sddm() {
     echo "==> 安装 SDDM..."
     sudo pacman -S --needed --noconfirm sddm
@@ -12,6 +38,9 @@ install_sddm() {
     echo "✅ SDDM 已安装并启用。"
 }
 
+# -----------------------------------------------------------------------------
+# 卸载 SDDM
+# -----------------------------------------------------------------------------
 uninstall_sddm() {
     echo "==> 停止并卸载 SDDM..."
     sudo systemctl disable sddm.service || true
@@ -19,12 +48,16 @@ uninstall_sddm() {
     echo "✅ SDDM 已卸载。"
 }
 
+# -----------------------------------------------------------------------------
+# 安装 astronaut 主题
+# -----------------------------------------------------------------------------
 install_theme() {
     echo "==> 安装依赖..."
     sudo pacman -S --needed --noconfirm qt6-svg qt6-virtualkeyboard qt6-multimedia-ffmpeg git
 
     echo "==> 检查 astronaut 主题目录..."
     if [ -d "$THEME_DIR" ]; then
+        # 检查必要文件是否存在，否则删除重新克隆
         if [ ! -f "$THEME_DIR/metadata.desktop" ] || [ ! -d "$THEME_DIR/Fonts" ] || [ ! -d "$THEME_DIR/Themes" ]; then
             echo "==> 检测到不完整安装，正在删除并重新克隆..."
             sudo rm -rf "$THEME_DIR"
@@ -33,7 +66,7 @@ install_theme() {
             echo "主题目录已存在且完整，跳过克隆。"
         fi
     else
-        echo "==> 克隆完整 astronaut 主题仓库..."
+        echo "==> 克隆 astronaut 主题仓库..."
         sudo git clone --depth 1 https://github.com/keyitdev/sddm-astronaut-theme.git "$THEME_DIR"
     fi
 
@@ -68,9 +101,12 @@ EOF
     echo "==> 重启 SDDM..."
     sudo systemctl restart sddm.service
 
-    echo "✅ astronaut 主题 (默认 hyprland_kath) 已安装完成！所有子主题可用。"
+    echo "✅ astronaut 主题 (默认 hyprland_kath) 已安装完成！"
 }
 
+# -----------------------------------------------------------------------------
+# 卸载 astronaut 主题
+# -----------------------------------------------------------------------------
 uninstall_theme() {
     echo "==> 切换回 Breeze 默认主题..."
     sudo bash -c "cat > $SDDM_CONF" <<EOF
@@ -98,9 +134,12 @@ EOF
     echo "✅ astronaut 主题已卸载，已恢复为 Breeze 登录界面。"
 }
 
+# -----------------------------------------------------------------------------
+# 切换 astronaut 子主题
+# -----------------------------------------------------------------------------
 switch_theme() {
     echo "==> 可用子主题列表："
-    themes=($(ls "$THEME_DIR/Themes" | sed 's/\.conf$//'))  # 获取主题名称数组
+    themes=($(ls "$THEME_DIR/Themes" | sed 's/\.conf$//'))  # 获取主题数组
     for i in "${!themes[@]}"; do
         echo "     $((i+1))  ${themes[i]}"
     done
@@ -117,15 +156,21 @@ switch_theme() {
             echo "❌ 主题 $theme 不存在"
         fi
     else
-        echo "❌ 无效编号，请输入1到${#themes[@]}之间的数字"
+        echo "❌ 无效编号，请输入 1-${#themes[@]} 之间的数字"
     fi
 }
 
+# -----------------------------------------------------------------------------
+# 预览 astronaut 主题
+# -----------------------------------------------------------------------------
 preview_theme() {
     echo "==> 预览当前主题..."
     sddm-greeter-qt6 --test-mode --theme "$THEME_DIR/"
 }
 
+# -----------------------------------------------------------------------------
+# 更新 astronaut 主题
+# -----------------------------------------------------------------------------
 update_theme() {
     echo "==> 更新 astronaut 主题..."
     if [ -d "$THEME_DIR/.git" ]; then
@@ -139,6 +184,9 @@ update_theme() {
     fi
 }
 
+# -----------------------------------------------------------------------------
+# 检查 SDDM 状态
+# -----------------------------------------------------------------------------
 check_status() {
     echo "========== 当前 SDDM 状态 =========="
     if systemctl is-active --quiet sddm.service; then
@@ -161,8 +209,10 @@ check_status() {
     echo "==================================="
 }
 
+# -----------------------------------------------------------------------------
+# 备份配置（保存为 .backup 到 ~/backups/sddm）
+# -----------------------------------------------------------------------------
 backup_config() {
-    BACKUP_DIR="$HOME/backups/sddm"
     echo "==> 备份 SDDM 配置到 $BACKUP_DIR ..."
     mkdir -p "$BACKUP_DIR"
 
@@ -173,13 +223,15 @@ backup_config() {
             echo "已备份: $file -> $BACKUP_DIR/${base}.backup"
         fi
     done
+
     echo "✅ 已完成备份。"
 }
 
+# -----------------------------------------------------------------------------
+# 恢复配置（删除现有配置，从 .backup 恢复）
+# -----------------------------------------------------------------------------
 restore_config() {
-    BACKUP_DIR="$HOME/backups/sddm"
     echo "==> 恢复备份配置..."
-
     if [ ! -d "$BACKUP_DIR" ]; then
         echo "❌ 未找到备份目录 $BACKUP_DIR"
         return 1
@@ -188,7 +240,7 @@ restore_config() {
     # 删除现有 /etc/sddm.conf*
     sudo rm -f /etc/sddm.conf*
 
-    # 恢复备份文件（去掉 .backup 后缀）
+    # 恢复 .backup 文件
     for backup in "$BACKUP_DIR"/*.backup; do
         if [ -f "$backup" ]; then
             base=$(basename "$backup" .backup)
@@ -201,6 +253,9 @@ restore_config() {
     sudo systemctl restart sddm.service
 }
 
+# -----------------------------------------------------------------------------
+# 菜单入口
+# -----------------------------------------------------------------------------
 menu() {
     echo "========== SDDM 管理器 =========="
     echo "1) 安装 SDDM"
