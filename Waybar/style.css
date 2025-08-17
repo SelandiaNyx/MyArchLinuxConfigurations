@@ -1,0 +1,184 @@
+/* ~/.config/waybar/style.css */
+
+/* -----------------------------------------------------------------------------
+ * 全局样式
+ * -------------------------------------------------------------------------- */
+* {
+    /* 推荐使用 Nerd Font 来获得所有图标 */
+    font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK SC", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Waybar 主窗口 */
+#waybar {
+    background-color: rgba(30, 30, 45, 0.85); /* 半透明的深蓝灰色背景 (毛玻璃感) */
+    color: #cdd6f4; /* 默认文字颜色 (Catppuccin Macchiato Text) */
+    border-radius: 15px; /* 圆角 */
+    border: 2px solid rgba(205, 214, 244, 0.2); /* 轻微的边框增加层次感 */
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+/* 鼠标悬浮在 Waybar 上时，背景变为不透明 */
+#waybar.hidden {
+    opacity: 0.5;
+}
+
+/* -----------------------------------------------------------------------------
+ * 模块样式
+ * -------------------------------------------------------------------------- */
+#custom-launcher,
+#workspaces,
+#window,
+#clock,
+#network,
+#pulseaudio,
+#bluetooth,
+#cpu,
+#memory,
+#disk,
+#tray,
+#custom-power { /* <-- 新增了 custom-launcher */
+    padding: 0 10px; /* 模块左右内边距 */
+    margin: 5px 3px; /* 模块上下外边距，制造悬浮感 */
+    border-radius: 10px; /* 模块圆角 */
+    background-color: rgba(69, 71, 90, 0.4); /* 模块背景色 (Catppuccin Macchiato Surface0) */
+}
+
+/* -----------------------------------------------------------------------------
+ * 左侧模块
+ * -------------------------------------------------------------------------- */
+
+/* 应用启动器 (新增) */
+#custom-launcher {
+    color: #89b4fa; /* (Blue) */
+    margin-left: 8px; /* 第一个模块，给一点左边距 */
+    font-size: 18px; /* 让图标大一点 */
+}
+
+/* Hyprland 工作区 */
+#workspaces button {
+    padding: 0 5px;
+    color: #89b4fa; /* 默认工作区颜色 (Blue) */
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+#workspaces button:hover {
+    background-color: rgba(137, 180, 250, 0.3); /* 悬浮时颜色 (Blue) */
+    color: #1e1e2e; /* (Base) */
+}
+
+#workspaces button.focused {
+    background-color: #89b4fa; /* 当前活动工作区颜色 (Blue) */
+    color: #1e1e2e; /* (Base) */
+}
+
+#workspaces button.urgent {
+    background-color: #f38ba8; /* 紧急工作区颜色 (Red) */
+    color: #1e1e2e; /* (Base) */
+}
+
+/* 窗口标题 */
+#window {
+    color: #f5c2e7; /* (Pink) */
+}
+
+/* -----------------------------------------------------------------------------
+ * 中间和右侧状态模块
+ * -------------------------------------------------------------------------- */
+
+/* 时钟 */
+#clock {
+    color: #cba6f7; /* (Mauve) */
+}
+
+/* 音频 */
+#pulseaudio {
+    color: #fab387; /* (Peach) */
+}
+#pulseaudio.muted {
+    color: #6c7086; /* (Subtext0) */
+}
+
+/* --- 新增蓝牙样式 --- */
+#bluetooth {
+    color: #89b4fa; /* (Blue) - 与网络图标颜色保持一致，符合连接的主题 */
+}
+#bluetooth.disabled {
+    color: #6c7086; /* (Subtext0) - 关闭时使用低调的颜色 */
+}
+
+/* 网络 */
+#network {
+    color: #89b4fa; /* (Blue) */
+}
+#network.disconnected {
+    color: #f38ba8; /* (Red) */
+}
+
+/* CPU */
+#cpu {
+    color: #a6e3a1; /* (Green) */
+}
+#cpu.critical {
+    color: #f38ba8; /* (Red) */
+    animation-name: blink;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+/* 内存 */
+#memory {
+    color: #f9e2af; /* (Yellow) */
+}
+#memory.critical {
+    color: #f38ba8; /* (Red) */
+}
+
+/* 磁盘 */
+#disk {
+    color: #94e2d5; /* (Teal) */
+}
+
+/* 电源按钮 */
+#custom-power {
+    color: #f38ba8; /* (Red) */
+    margin-right: 8px; /* 最后一个模块，给一点右边距 */
+}
+
+/* 托盘 */
+#tray {
+    background-color: transparent;
+}
+
+/* -----------------------------------------------------------------------------
+ * 动画和提示框
+ * -------------------------------------------------------------------------- */
+
+/* 闪烁动画，用于 'critical' 状态 */
+@keyframes blink {
+    to {
+        background-color: rgba(243, 139, 168, 0.6);
+        color: #1e1e2e;
+    }
+}
+
+/* 提示框样式 */
+tooltip {
+    background-color: #1e1e2e; /* (Base) */
+    color: #cdd6f4; /* (Text) */
+    border-radius: 10px;
+    border: 2px solid #89b4fa; /* (Blue) */
+}
+
+tooltip label {
+    padding: 5px;
+    color: #cdd6f4; /* (Text) */
+}
+
