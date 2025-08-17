@@ -126,15 +126,13 @@ chmod +x sddm-manager.sh
 
 ## 主题目录结构（安装后）
 
+```
 /usr/share/sddm/themes/sddm-astronaut-theme/
-
-├── Fonts/  # 主题字体
-
-├── Themes/# 子主题 .conf 文件
-
+├── Fonts/                  # 主题字体
+├── Themes/                 # 子主题 .conf 文件
 ├── metadata.desktop        # 主题配置（ConfigFile 行控制子主题）
-
 └── ...                     # 其他文件（如壁纸、QML）
+```
 
 ## 注意事项
 
