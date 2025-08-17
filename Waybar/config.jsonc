@@ -103,7 +103,6 @@
         "on-click": "blueman-manager",
         "on-click-right": "rfkill toggle bluetooth"
     },
-    // --- [v0.14.0 修正] 恢复使用 {avg_frequency} 并修正单位为 MHz ---
     "cpu": {
         "interval": 2,
         "format": "󰘚 {usage}% ({avg_frequency}GHz)",
