@@ -29,7 +29,7 @@
 ## 安装与准备
 
 1. 下载脚本：
-curl -fsSL -o sddm-manager.sh <https://example.com/sddm-manager.sh>
+curl -fsSL -o sddm-manager.sh <https://github.com/SelandiaNyx/MyArchLinuxConfigurations/blob/main/SDDM/auto-script/sddm-manager.sh>
 
 2. 赋予执行权限：
 chmod +x sddm-manager.sh
