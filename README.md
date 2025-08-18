@@ -1,29 +1,23 @@
 # SelandiaNyx 的 Arch Linux 配置文件仓库
 
-本仓库包含我个人在 Arch Linux 下使用 Hyprland 环境的配置文件，适用于搭建完整的 Wayland 桌面体验。PS：可能会持续更新。
+本仓库包含我个人在 Arch Linux 下使用 Hyprland 环境的配置文件，适用于搭建基础的 Wayland 桌面体验。PS：不保证持续更新。
 
 ## 仓库包含的软件
 
-* **[Waybar](https://github.com/Alexays/Waybar)** – 高度可定制的 Wayland 状态栏，适用于 Sway 和基于 Wlroots 的合成器。
-* **[fcitx5](https://github.com/fcitx/fcitx5)** – 下一代输入法框架，采用 LGPL-2.1+ 许可证。
-* **[firefox](https://github.com/mozilla/firefox)** – Mozilla 开发的开源网页浏览器。
-* **[git](https://git-scm.com/)** – 分布式版本控制系统，官方网站。
-* **[hyprpaper](https://github.com/hyprwm/hyprpaper)** – Hyprland 的壁纸管理工具，支持动态壁纸切换。
-* **[hyprpicker](https://github.com/hyprwm/hyprpicker)** – Hyprland 的颜色选取器，集成于 Wayland 环境。
-* **[hypridle](https://github.com/hyprwm/hypridle)** – Hyprland 的屏幕空闲管理工具，支持自动锁屏等功能。
-* **[hyprlock](https://github.com/hyprwm/hyprlock)** – Hyprland 的锁屏工具，支持自定义锁屏界面。
-* **[hyprpolkitagent](https://github.com/hyprwm/hyprpolkitagent)** – Hyprland 的权限管理代理，集成于 Wayland 环境。
-* **[hyprsunset](https://github.com/hyprwm/hyprsunset)** – Hyprland 的动态日落/日出效果插件。
-* **[hyprsysteminfo](https://github.com/hyprwm/hyprsysteminfo)** – Hyprland 的系统信息显示工具，集成于状态栏。
-* **[Hyprland](https://github.com/hyprwm/Hyprland)** – 独立的、高度可定制的动态平铺 Wayland 合成器。
-* **[kitty](https://sw.kovidgoyal.net/kitty/)** – 现代化的 GPU 加速终端，支持图像和 Unicode 字形。
-* **[mpv](https://mpv.io/)**
-* **[NetworkManager](https://gitlab.freedesktop.org/NetworkManager/NetworkManager)** – Linux 下的网络管理工具，支持多种网络接口。
-* **[neovim](https://neovim.io/)** – 现代化的 Vim 编辑器，增强了插件系统和异步支持。
-* **[sddm](https://github.com/sddm/sddm)** – 基于 QML 的 X11 和 Wayland 显示管理器，支持主题定制。
-* **[thunar](https://docs.xfce.org/xfce/thunar/start)** – Xfce 桌面环境的文件管理器，轻量级且易于使用。
-* **[vscode](https://github.com/microsoft/vscode)** – 由 Microsoft 开发的开源代码编辑器，支持多种编程语言和插件。
-* **[wofi](https://hg.sr.ht/~scoopta/wofi)** – Wayland 下的应用启动器，支持模糊搜索和主题定制。
-* **[xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland)** – Hyprland 的桌面门户实现，支持与 X11 应用的互操作。
-* **[zsh](https://www.zsh.org/)** – 功能强大的 shell，支持自动补全、脚本编程等特性。
-* **[QDiskinfo](https://github.com/edisionnano/QDiskInfo)**
+* **[Fcitx5](https://github.com/fcitx/fcitx5)**
+* **[Hypridle](https://github.com/hyprwm/hypridle)**
+* **[Hyprland](https://github.com/hyprwm/Hyprland)**
+* **[Hyprlock](https://github.com/hyprwm/hyprlock)**
+* **[Hyprsunset](https://github.com/hyprwm/hyprsunset)**
+* **[Hyprpaper](https://github.com/hyprwm/hyprpaper)**
+* **[Sddm](https://github.com/sddm/sddm)**
+* **[Waybar](https://github.com/Alexays/Waybar)**
+* **[Wofi](https://hg.sr.ht/~scoopta/wofi)**
+
+## 2025-08-19 更新
+
+添加了 Hyprpaper\SDDM\Waybar\Wofi 的管理脚本，实现了一些基础功能。
+
+Hyprpaper 作为独立文件夹。
+
+增添了大量注释。
