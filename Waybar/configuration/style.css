@@ -4,12 +4,9 @@
  * 全局样式
  * -------------------------------------------------------------------------- */
 * {
-  border: none;
-  border-radius: 0;
   font-family: "JetBrainsMonoNL Nerd Font Mono", "Noto Sans CJK SC", sans-serif;
   font-size: 14px;
   font-weight: bold;
-  min-height: 0;
 }
 
 /* Waybar 主窗口 */
@@ -155,7 +152,7 @@ window#waybar.hidden {
 
 /* 托盘 */
 #tray {
-  background: none;
+  background: transparent;
 }
 
 /* -----------------------------------------------------------------------------
