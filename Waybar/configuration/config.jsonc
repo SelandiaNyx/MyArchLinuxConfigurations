@@ -1,135 +1,135 @@
+/* ~/.config/waybar/config.jsonc */
+
+/* Waybar 主配置文件 - 适用于 Hyprland 窗口管理器 */
 {
-    // -------------------------------------------------------------------------
-    // 全局设置
-    // -------------------------------------------------------------------------
-    "layer": "top",
-    "position": "top",
-    "height": 38,
-    "spacing": 4,
-    // -------------------------------------------------------------------------
-    // 模块排列
-    // -------------------------------------------------------------------------
-    "modules-left": [
-        "custom/launcher",
-        "hyprland/workspaces",
-        "hyprland/window"
+    // ==================== 全局显示设置 ====================
+    "layer": "top",          // 固定显示在屏幕最上层
+    "position": "top",       // 面板位置（支持 top/bottom/left/right）
+    "height": 38,            // 像素高度（根据 HiDPI 屏幕调整）
+    "spacing": 4,            // 模块间最小间隔（像素）
+
+    // ==================== 模块布局 ====================
+    "modules-left": [        // 左侧模块（系统相关）
+        "custom/launcher",   // 应用启动器
+        "hyprland/workspaces", // 动态工作区
+        "hyprland/window"    // 活动窗口标题
     ],
-    "modules-center": [
-        "clock"
+    "modules-center": [      // 中部模块（核心信息）
+        "clock"              // 时间日期
     ],
-    "modules-right": [
-        "network",
-        "pulseaudio",
-        "bluetooth",
-        "cpu",
-        "memory",
-        "disk",
-        "tray",
-        "custom/power"
+    "modules-right": [       // 右侧模块（状态监控）
+        "network",           // 网络连接
+        "pulseaudio",       // 音频控制
+        "bluetooth",        // 蓝牙设备
+        "cpu",               // 处理器负载
+        "memory",            // 内存占用
+        "disk",              // 磁盘空间
+        "tray",             // 系统托盘
+        "custom/power"      // 电源管理
     ],
-    // -------------------------------------------------------------------------
-    // 模块详细配置
-    // -------------------------------------------------------------------------
-    "custom/launcher": {
-        "format": "󰣇",
+
+    // ==================== 模块详细配置 ====================
+    "custom/launcher": {     // 应用启动器（Wofi）
+        "format": "󰣇",       // Nerd Font 图标
         "tooltip-format": "应用启动器 (Wofi)",
-        "on-click": "wofi --show drun --width 550 --height 400"
+        "on-click": "sh ~/.config/wofi/launchermenu.sh" // 点击触发
     },
-    "hyprland/workspaces": {
-        "disable-scroll": false,
-        "all-outputs": true,
-        "on-click": "activate",
-        "format": "{icon}",
-        "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "󰈙",
-            "6": "󰝚",
-            "7": "󰎆",
-            "8": "",
-            "9": "󰍹",
-            "urgent": "",
-            "focused": "",
-            "default": ""
-        }
+
+    "hyprland/workspaces": { // 动态工作区管理
+        "format": "{icon}",  // 纯图标显示模式
+        "format-icons": {    // 各工作区自定义图标
+            "1": "",        // 1: 终端
+            "2": "",        // 2: 浏览器
+            "3": "",        // 3: 文件管理
+            "4": "",        // 4: 开发环境
+            "5": "󰈙",        // 5: 媒体
+            "6": "󰝚",        // 6: 社交
+            "7": "󰎆",        // 7: 游戏
+            "8": "",        // 8: Steam
+            "9": "󰍹",        // 9: 虚拟桌面
+            "urgent": "",   // 紧急工作区提示
+            "focused": "",   // 当前聚焦状态
+            "default": ""   // 默认状态
+        },
+        "disable-scroll": false, // 允许鼠标滚轮切换
+        "all-outputs": true,  // 跨显示器显示所有工作区
+        "on-click": "activate" // 点击切换工作区
     },
-    "hyprland/window": {
-        "format": "{}",
-        "max-length": 35,
-        "separate-outputs": true
+
+    "hyprland/window": {     // 活动窗口标题
+        "format": "{}",      // 原始标题文本
+        "max-length": 35,    // 最大字符限制（防溢出）
+        "separate-outputs": true // 多显示器独立显示
     },
-    "clock": {
-        "format": "󰥔 {:%Y-%m-%d %H:%M:%S}",
-        "tooltip-format": "{:%Y %B}\n{calendar}",
-        "format-alt": "󰃶 {:%A, %B %d, %Y}"
+
+    "clock": {               // 时间日期模块
+        "format": "󰥔 {:%Y-%m-%d %H:%M:%S}", // 主显示格式
+        "format-alt": "󰃶 {:%A, %B %d, %Y}", // 备用格式（点击切换）
+        "tooltip-format": "{:%Y %B}\n{calendar}" // 悬浮日历
     },
-    // --- [v0.14.0 修正] 恢复使用 {bandwidth...Bytes} 字段 ---
-    "network": {
-        "interval": 1,
-        "format-wifi": " {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
-        "format-ethernet": "󰈀 {bandwidthDownBytes}↓ {bandwidthUpBytes}↑",
-        "tooltip-format": "接口: {ifname}\nIP: {ipaddr}\nESSID: {essid}\n下载: {bandwidthDownBytes}\n上传: {bandwidthUpBytes}",
-        "format-disconnected": "󰖪 Disconnected",
-        "on-click": "nm-connection-editor"
+
+    "network": {             // 网络状态监控
+        "format-wifi": " {bandwidthDownBytes}↓ {bandwidthUpBytes}↑", // WiFi 状态
+        "format-ethernet": "󰈀 {bandwidthDownBytes}↓ {bandwidthUpBytes}↑", // 有线网络
+        "format-disconnected": "󰖪 Disconnected", // 断连状态
+        "tooltip-format": "接口: {ifname}\nIP: {ipaddr}\nESSID: {essid}", // 详细连接信息
+        "interval": 1,       // 实时刷新频率（秒）
+        "on-click": "nm-connection-editor" // 点击打开网络管理
     },
-    "pulseaudio": {
-        "format": "{icon} {volume}%",
-        "format-muted": "󰖁 Muted",
-        "on-click": "pavucontrol",
-        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-        "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
-        "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
-        "format-icons": {
+
+    "pulseaudio": {          // 音频控制
+        "format": "{icon} {volume}%", // 音量百分比显示
+        "format-icons": {    // 设备类型对应图标
             "headphone": "󰋋",
-            "hands-free": "󰋎",
             "headset": "󰋎",
-            "phone": "󰏲",
-            "portable": "󰏲",
-            "car": "󰄋",
-            "default": [
-                "",
-                "",
-                ""
-            ]
-        }
+            "default": ["", "", ""] // 音量等级图标
+        },
+        "format-muted": "󰖁 Muted", // 静音状态
+        "on-click": "pavucontrol", // 点击打开控制面板
+        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle", // 右键切换静音
+        "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%", // 滚轮调音
+        "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
     },
-    "bluetooth": {
-        "format": "󰂯 {status}",
-        "format-disabled": "󰂲 Off",
-        "format-connected": "󰂱 {device_alias}",
-        "tooltip-format": "{device_alias}\nBattery: {device_battery_percentage}%",
-        "on-click": "blueman-manager",
-        "on-click-right": "rfkill toggle bluetooth"
+
+    "bluetooth": {           // 蓝牙设备管理
+        "format": "󰂯 {status}", // 基础状态
+        "format-connected": "󰂱 {device_alias}", // 已连接设备
+        "format-disabled": "󰂲 Off", // 禁用状态
+        "tooltip-format": "{device_alias}\nBattery: {device_battery_percentage}%", // 设备电量
+        "on-click": "blueman-manager", // 点击管理界面
+        "on-click-right": "rfkill toggle bluetooth" // 右键开关蓝牙
     },
-    "cpu": {
-        "interval": 2,
-        "format": "󰘚 {usage}% ({avg_frequency}GHz)",
-        "tooltip": true,
-        "tooltip-format": "CPU: {usage}% | Temp: {temperatureC}°C",
-        "on-click": "kitty -e htop"
+
+    "cpu": {                 // 处理器监控
+        "format": "󰘚 {usage}% ({avg_frequency}GHz)", // 使用率+频率
+        "interval": 2,       // 监控间隔（避免高频刷新）
+        "tooltip-format": "CPU: {usage}%", // 简化悬浮提示
+        "on-click": "kitty -e htop" // 点击打开系统监控
     },
-    "memory": {
-        "interval": 2,
-        "format": "󰍛 {}%",
-        "tooltip-format": "Mem: {used:0.2f}GB / {total:0.2f}GB",
-        "on-click": "kitty -e htop"
+
+    "memory": {              // 内存监控
+        "format": "󰍛 {}%",   // 使用率百分比
+        "tooltip-format": "Mem: {used:0.2f}GiB / {total:0.2f}GiB", // 精确容量
+        "interval": 2,       // 与 CPU 同步刷新
+        "on-click": "kitty -e htop" 
     },
-    "disk": {
-        "path": "/",
-        "interval": 30,
-        "format": "󰋊 {percentage_used}%",
-        "tooltip-format": "Disk (/): {used} / {total}",
-        "on-click": "qdiskinfo"
+
+    "disk": {                // 磁盘空间监控
+        "format": "󰋊 {percentage_used}%", // 根分区使用率
+        "tooltip-format": "Disk (/): {used} / {total}", // 分区详情
+        "path": "/",         // 监控根分区
+        "interval": 30,     // 低频刷新（减少 I/O 压力）
+        "on-click": "qdiskinfo" // 磁盘分析工具
     },
-    "tray": {
-        "icon-size": 18,
-        "spacing": 10
+
+    "tray": {                // 系统托盘
+        "icon-size": 18,     // 托盘图标尺寸
+        "spacing": 10       // 图标间距
     },
-    "custom/power": {
-        "format": "",
+
+    "custom/power": {        // 电源管理菜单
+        "format": "",      // 电源图标
         "tooltip-format": "电源菜单 (wofi)",
-        "on-click": "sh ~/.config/wofi/powermenu.sh"
+        "on-click": "sh ~/.config/wofi/powermenu.sh" // 自定义脚本
     }
 }

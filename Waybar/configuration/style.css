@@ -4,29 +4,38 @@
  * 全局样式
  * -------------------------------------------------------------------------- */
 * {
-    /* 推荐使用 Nerd Font 来获得所有图标 */
-    font-family: "JetBrainsMonoNL Nerd Font Mono", "Noto Sans CJK SC", sans-serif;
-    font-size: 14px;
-    font-weight: bold;
+  border: none;
+  border-radius: 0;
+  font-family: "JetBrainsMonoNL Nerd Font Mono", "Noto Sans CJK SC", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  min-height: 0;
 }
 
 /* Waybar 主窗口 */
-#waybar {
-    background-color: rgba(30, 30, 45, 0.85); /* 半透明的深蓝灰色背景 (毛玻璃感) */
-    color: #cdd6f4; /* 默认文字颜色 (Catppuccin Macchiato Text) */
-    border-radius: 15px; /* 圆角 */
-    border: 2px solid rgba(205, 214, 244, 0.2); /* 轻微的边框增加层次感 */
-    transition-property: background-color;
-    transition-duration: .5s;
+window#waybar {
+  background-color: rgba(30, 30, 45, 0.85); /* 半透明深蓝灰背景 */
+  color: #cdd6f4;
+  border-radius: 15px;
+  border: 2px solid rgba(205, 214, 244, 0.2);
+  transition: background-color 0.5s ease;
 }
 
-/* 鼠标悬浮在 Waybar 上时，背景变为不透明 */
-#waybar.hidden {
-    opacity: 0.5;
+/* 隐藏时半透明状态 */
+window#waybar.hidden {
+  opacity: 0.5;
+}
+
+/* 模块组布局 */
+.modules-left,
+.modules-center,
+.modules-right {
+  padding: 0;
+  margin: 0;
 }
 
 /* -----------------------------------------------------------------------------
- * 模块样式
+ * 模块通用样式
  * -------------------------------------------------------------------------- */
 #custom-launcher,
 #workspaces,
@@ -39,146 +48,133 @@
 #memory,
 #disk,
 #tray,
-#custom-power { /* <-- 新增了 custom-launcher */
-    padding: 0 10px; /* 模块左右内边距 */
-    margin: 5px 3px; /* 模块上下外边距，制造悬浮感 */
-    border-radius: 10px; /* 模块圆角 */
-    background-color: rgba(69, 71, 90, 0.4); /* 模块背景色 (Catppuccin Macchiato Surface0) */
+#custom-power {
+  padding: 0 10px;
+  margin: 5px 3px;
+  border-radius: 10px;
+  background-color: rgba(69, 71, 90, 0.4);
 }
 
 /* -----------------------------------------------------------------------------
  * 左侧模块
  * -------------------------------------------------------------------------- */
 
-/* 应用启动器 (新增) */
+/* 应用启动器 */
 #custom-launcher {
-    color: #89b4fa; /* (Blue) */
-    margin-left: 8px; /* 第一个模块，给一点左边距 */
-    font-size: 18px; /* 让图标大一点 */
+  color: #89b4fa;
+  margin-left: 8px;
+  font-size: 18px;
 }
 
-/* Hyprland 工作区 */
+/* 工作区 */
 #workspaces button {
-    padding: 0 5px;
-    color: #89b4fa; /* 默认工作区颜色 (Blue) */
-    background-color: transparent;
-    border: none;
-    border-radius: 10px;
-    transition: all 0.3s ease;
+  padding: 0 5px;
+  color: #89b4fa;
+  background: none;
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
-
 #workspaces button:hover {
-    background-color: rgba(137, 180, 250, 0.3); /* 悬浮时颜色 (Blue) */
-    color: #1e1e2e; /* (Base) */
+  background-color: rgba(137, 180, 250, 0.3);
+  color: #1e1e2e;
 }
-
 #workspaces button.focused {
-    background-color: #89b4fa; /* 当前活动工作区颜色 (Blue) */
-    color: #1e1e2e; /* (Base) */
+  background-color: #89b4fa;
+  color: #1e1e2e;
 }
-
 #workspaces button.urgent {
-    background-color: #f38ba8; /* 紧急工作区颜色 (Red) */
-    color: #1e1e2e; /* (Base) */
+  background-color: #f38ba8;
+  color: #1e1e2e;
 }
 
 /* 窗口标题 */
 #window {
-    color: #f5c2e7; /* (Pink) */
+  color: #f5c2e7;
 }
 
 /* -----------------------------------------------------------------------------
- * 中间和右侧状态模块
+ * 中间与右侧模块
  * -------------------------------------------------------------------------- */
 
 /* 时钟 */
 #clock {
-    color: #cba6f7; /* (Mauve) */
+  color: #cba6f7;
 }
 
 /* 音频 */
 #pulseaudio {
-    color: #fab387; /* (Peach) */
+  color: #fab387;
 }
 #pulseaudio.muted {
-    color: #6c7086; /* (Subtext0) */
+  color: #6c7086;
 }
 
-/* --- 新增蓝牙样式 --- */
+/* 蓝牙 */
 #bluetooth {
-    color: #89b4fa; /* (Blue) - 与网络图标颜色保持一致，符合连接的主题 */
+  color: #89b4fa;
 }
 #bluetooth.disabled {
-    color: #6c7086; /* (Subtext0) - 关闭时使用低调的颜色 */
+  color: #6c7086;
 }
 
 /* 网络 */
 #network {
-    color: #89b4fa; /* (Blue) */
+  color: #89b4fa;
 }
 #network.disconnected {
-    color: #f38ba8; /* (Red) */
+  color: #f38ba8;
 }
 
 /* CPU */
 #cpu {
-    color: #a6e3a1; /* (Green) */
+  color: #a6e3a1;
 }
 #cpu.critical {
-    color: #f38ba8; /* (Red) */
-    animation-name: blink;
-    animation-duration: 1s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+  color: #f38ba8;
+  animation: blink 1.5s steps(12) infinite alternate;
 }
 
 /* 内存 */
 #memory {
-    color: #f9e2af; /* (Yellow) */
+  color: #f9e2af;
 }
 #memory.critical {
-    color: #f38ba8; /* (Red) */
+  color: #f38ba8;
 }
 
 /* 磁盘 */
 #disk {
-    color: #94e2d5; /* (Teal) */
+  color: #94e2d5;
 }
 
 /* 电源按钮 */
 #custom-power {
-    color: #f38ba8; /* (Red) */
-    margin-right: 8px; /* 最后一个模块，给一点右边距 */
+  color: #f38ba8;
+  margin-right: 8px;
 }
 
 /* 托盘 */
 #tray {
-    background-color: transparent;
+  background: none;
 }
 
 /* -----------------------------------------------------------------------------
- * 动画和提示框
+ * 动画与提示框
  * -------------------------------------------------------------------------- */
-
-/* 闪烁动画，用于 'critical' 状态 */
 @keyframes blink {
-    to {
-        background-color: rgba(243, 139, 168, 0.6);
-        color: #1e1e2e;
-    }
+  to {
+    background-color: rgba(243, 139, 168, 0.6);
+    color: #1e1e2e;
+  }
 }
 
-/* 提示框样式 */
 tooltip {
-    background-color: #1e1e2e; /* (Base) */
-    color: #cdd6f4; /* (Text) */
-    border-radius: 10px;
-    border: 2px solid #89b4fa; /* (Blue) */
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 10px;
+  border: 2px solid #89b4fa;
 }
-
 tooltip label {
-    padding: 5px;
-    color: #cdd6f4; /* (Text) */
+  padding: 5px;
+  color: #cdd6f4;
 }
-
