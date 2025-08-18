@@ -104,14 +104,14 @@
         "format": "󰘚 {usage}% ({avg_frequency}GHz)", // 使用率+频率
         "interval": 2,       // 监控间隔（避免高频刷新）
         "tooltip-format": "CPU: {usage}%", // 简化悬浮提示
-        "on-click": "kitty -e htop" // 点击打开系统监控
+        "on-click": "missioncenter" // 点击打开系统监控
     },
 
     "memory": {              // 内存监控
         "format": "󰍛 {}%",   // 使用率百分比
         "tooltip-format": "Mem: {used:0.2f}GiB / {total:0.2f}GiB", // 精确容量
         "interval": 2,       // 与 CPU 同步刷新
-        "on-click": "kitty -e htop" 
+        "on-click": "missioncenter" 
     },
 
     "disk": {                // 磁盘空间监控
