@@ -119,7 +119,7 @@
         "tooltip-format": "Disk (/): {used} / {total}", // 分区详情
         "path": "/",         // 监控根分区
         "interval": 30,     // 低频刷新（减少 I/O 压力）
-        "on-click": "qdiskinfo" // 磁盘分析工具
+        "on-click": "baobab" // 磁盘分析工具
     },
 
     "tray": {                // 系统托盘
