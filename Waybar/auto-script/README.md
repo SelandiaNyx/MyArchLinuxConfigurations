@@ -1,4 +1,4 @@
-# 🎛 Waybar 管理器
+# Waybar 管理器
 
 `waybar-manager.sh` 是一个统一结构的 Bash 脚本，用于在 **Arch Linux** 系统上管理 [Waybar](https://github.com/Alexays/Waybar) 状态栏的安装、配置、备份与恢复。  
 它能自动下载配置文件与样式表，一键应用或还原，方便快速部署 Waybar。

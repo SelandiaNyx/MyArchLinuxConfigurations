@@ -61,13 +61,29 @@ _generate_config() {
   local monitors
   monitors=$(hyprctl monitors | awk '/Monitor/{print $2}' | sort -u) || return $(_error_exit "读取显示器失败")
   [[ -n "$monitors" ]] || return $(_error_exit "未检测到显示器")
+
   {
+    echo "# ~/.config/hypr/hyprpaper.conf"
+    echo ""
+    echo "# 预加载壁纸文件到内存"
     echo "preload = $DEFAULT_WALLPAPER"
-    for m in $monitors; do echo "wallpaper = $m,contain:$DEFAULT_WALLPAPER"; done
+    echo ""
+    echo "# 设置指定显示器的壁纸"
+    echo "# 使用 hyprctl monitors 查看显示器名称"
+    for m in $monitors; do
+      echo "wallpaper = $m,contain:$DEFAULT_WALLPAPER"
+    done
+    echo ""
+    echo "# 禁用 IPC 功能以减少后台轮询"
     echo "ipc = off"
+    echo ""
+    echo "# 欢迎文本设置（可选）"
+    echo "# splash = true"
+    echo "# splash_offset = 10"
   } > "$CONFIG_FILE"
+
   _log_action "生成默认配置"
-  echo "✅ 配置已生成"
+  echo "✅ 配置已生成: $CONFIG_FILE"
 }
 
 # 更新壁纸
@@ -75,13 +91,27 @@ _update_wallpaper() {
   local path="$1" mon="${2:-}"
   [[ -f "$path" ]] || return $(_error_exit "文件不存在: $path")
   file "$path" | grep -qE 'image|bitmap' || return $(_error_exit "不是图片: $path")
+
   if [[ -n "$mon" ]]; then
-    sed -i "/wallpaper = $mon,contain:.*/c\wallpaper = $mon,contain:$path" "$CONFIG_FILE"
-    grep -q "preload = $path" "$CONFIG_FILE" || echo "preload = $path" >> "$CONFIG_FILE"
+    # 指定显示器更新
+    if grep -q "^wallpaper = $mon,contain:" "$CONFIG_FILE"; then
+      sed -i "s|^wallpaper = $mon,contain:.*|wallpaper = $mon,contain:$path|" "$CONFIG_FILE"
+    else
+      # 没有该显示器的配置则追加
+      echo "wallpaper = $mon,contain:$path" >> "$CONFIG_FILE"
+    fi
+    # 确保 preload 存在
+    if grep -q "^preload = " "$CONFIG_FILE"; then
+      sed -i "s|^preload = .*|preload = $path|" "$CONFIG_FILE"
+    else
+      sed -i "/^# 预加载壁纸文件到内存/a preload = $path" "$CONFIG_FILE"
+    fi
   else
+    # 全局更新
     sed -i "s|^preload = .*|preload = $path|" "$CONFIG_FILE"
     sed -i "s|^wallpaper = .*|wallpaper = ,contain:$path|" "$CONFIG_FILE"
   fi
+
   _log_action "更新壁纸: $path ${mon:+($mon)}"
 }
 

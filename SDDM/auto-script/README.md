@@ -1,6 +1,6 @@
-# 🔐 SDDM 管理器
+# SDDM 管理器
 
-`sddm-manager.sh` 是一个统一结构的 Bash 脚本，用于管理 **SDDM** 和 [sddm-astronaut-theme](https://github.com/keyitdev/sddm-astronaut-theme) 主题。  
+`sddm-manager.sh` 是一个统一结构的 Bash 脚本，用于管理 [SDDM](https://github.com/sddm/sddm/) 和 [sddm-astronaut-theme](https://github.com/keyitdev/sddm-astronaut-theme) 主题。  
 它支持安装、卸载、子主题切换、主题更新、预览、备份和恢复，专为 **Arch Linux** 系列发行版设计。
 
 ---

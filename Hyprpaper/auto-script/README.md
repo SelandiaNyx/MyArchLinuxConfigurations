@@ -1,4 +1,4 @@
-# 🖼 Hyprpaper 管理器
+# Hyprpaper 管理器
 
 `hyprpaper-manager.sh` 是一个统一结构的 Bash 脚本，用于在 **Arch Linux** 系统上管理 [Hyprpaper](https://hyprland.org/hyprpaper/)。  
 它支持安装、卸载、配置、壁纸切换、多显示器管理、备份与恢复，并可一键重载 Hyprpaper 服务。
@@ -51,7 +51,7 @@ chmod +x hyprpaper-manager.sh
 
 📜 菜单功能
 
-```bsh
+```bash
 ========== Hyprpaper 管理器 ==========
 当前壁纸: ~/wallpapers/wallpaper1.png
 状态: 运行中
