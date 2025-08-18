@@ -77,8 +77,8 @@ SELECTION=$(echo -e "$POWER_OPTIONS" | wofi \
 # ${SELECTION##* }：提取选项文本后的部分，用于匹配。
 case "${SELECTION##* }" in
     "锁定屏幕")
-        check_command_installed "swaylock"  # 检查swaylock命令是否存在。
-        swaylock --clock --indicator --effect-blur 7x5  # 执行锁定屏幕，显示时钟、指示器和模糊效果。
+        check_command_installed "hyprlock"  # 检查hyprlock命令是否存在。
+        hyprlock  # 执行锁定屏幕，显示时钟、指示器和模糊效果。
         ;;
     "睡眠模式")
         check_command_installed "systemctl"  # 检查systemctl命令是否存在。
