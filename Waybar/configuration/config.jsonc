@@ -72,7 +72,7 @@
         "format-wifi": " {bandwidthDownBytes}↓ {bandwidthUpBytes}↑", // WiFi 状态
         "format-ethernet": "󰈀 {bandwidthDownBytes}↓ {bandwidthUpBytes}↑", // 有线网络
         "format-disconnected": "󰖪 Disconnected", // 断连状态
-        "tooltip-format": "接口: {ifname}\nIP: {ipaddr}\nESSID: {essid}", // 详细连接信息
+        "tooltip-format": "接口: {ifname}\nIP: {ipaddr}", // 详细连接信息
         "interval": 1,       // 实时刷新频率（秒）
         "on-click": "nm-connection-editor" // 点击打开网络管理
     },
