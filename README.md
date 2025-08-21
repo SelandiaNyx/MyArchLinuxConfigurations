@@ -1,6 +1,6 @@
 # SelandiaNyx 的 Arch Linux 配置文件仓库
 
-本仓库包含我个人在 Arch Linux 下使用 Hyprland 环境的配置文件，适用于搭建基础的 Wayland 桌面体验。PS：不保证持续更新。
+本仓库包含我个人在 Arch Linux 下使用 Hyprland 环境的配置文件，由 AI 生成，适用于搭建基础的 Wayland 桌面体验。PS：不保证持续更新。
 
 ## 仓库包含的软件
 
