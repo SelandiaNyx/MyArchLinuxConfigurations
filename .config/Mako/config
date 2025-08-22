@@ -52,7 +52,7 @@ on-notify=exec mpv /usr/share/sounds/freedesktop/stereo/message.oga
 
 # 字体设置 (Pango 字体描述格式)
 # 默认: monospace 10
-font=Noto Sans 11
+font=JetBrainsMonoNL Nerd Font Mono 11
 
 # 背景颜色 (格式: #RRGGBB 或 #RRGGBBAA)
 # 默认: #285577FF
