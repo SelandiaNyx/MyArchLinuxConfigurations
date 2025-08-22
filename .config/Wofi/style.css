@@ -11,7 +11,7 @@ window {
     background-color: rgba(30, 34, 40, 0.95);  /* 设置窗口背景色为半透明深灰，提高视觉深度。 */
     border: 2px solid #6272a4;  /* 添加边框，颜色为蓝色调，增强窗口轮廓。 */
     border-radius: 12px;  /* 设置圆角，使窗口外观更现代。 */
-    font: 12px "JetBrainsMono Nerd Font";  /* 指定字体、大小和类型，确保图标支持。 */
+    font: 12px "JetBrainsMonoNL Nerd Font Mono";  /* 指定字体、大小和类型，确保图标支持。 */
 }
 
 #input {
