@@ -66,7 +66,7 @@
         "format": "󰥔 {:%Y-%m-%d %H:%M:%S}", // 主显示格式
         "format-alt": "󰃶 {:%A, %B %d, %Y}", // 备用格式（点击切换）
         "tooltip-format": "{:%Y %B}\n{calendar}", // 悬浮日历
-        "interval": 1  // 每秒刷新一次
+        "interval": 1       // 实时刷新频率（秒）
     },
 
     "network": {             // 网络状态监控
